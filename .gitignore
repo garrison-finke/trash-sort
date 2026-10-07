@@ -1,0 +1,25 @@
+# Dependencies (The heavy folders we don't want on Git)
+node_modules/
+jspm_packages/
+
+# Build outputs (If you are using Vite, Webpack, etc.)
+dist/
+build/
+out/
+
+# IDEs and Editors
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+
+# Environment variables / Secrets
+.env
+.env.local
