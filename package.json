@@ -1,5 +1,14 @@
 {
+  "scripts": {
+    "dev": "vite"
+  },
   "dependencies": {
     "phaser": "^4.2.1"
+  },
+  "devDependencies": {
+    "vite": "^7.0.0"
+  },
+  "allowScripts": {
+    "esbuild@0.28.2": true
   }
 }
