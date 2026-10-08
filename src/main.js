@@ -64,6 +64,13 @@ function create ()
 
         this.input.on('dragend', function (pointer, gameObject) {
             gameObject.body.setAllowGravity(true);
+
+            // When letting go of object, it will now fling in the direction
+            // of where the pointer was going, also takes note of pointer's velocity. 
+            const flingSpeedX = pointer.velocity.x;
+            const flingSpeedY = pointer.velocity.y;
+            gameObject.body.setVelocity(flingSpeedX, flingSpeedY);
+
         });
 
 }
