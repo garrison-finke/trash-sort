@@ -74,8 +74,9 @@ function create ()
         });
 
 }
+
 /*
-    Careful running code in update, this function
+    Careful running code in update(), this function
     will run once *every* frame, very possible to 
     accidentally create evil loops! Notice I put button
     checking logic in create instead of update().
