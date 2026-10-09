@@ -64,11 +64,19 @@ function create ()
 
         this.input.on('dragend', function (pointer, gameObject) {
             gameObject.body.setAllowGravity(true);
+
+            // When letting go of object, it will now fling in the direction
+            // of where the pointer was going, also takes note of pointer's velocity. 
+            const flingSpeedX = pointer.velocity.x;
+            const flingSpeedY = pointer.velocity.y;
+            gameObject.body.setVelocity(flingSpeedX, flingSpeedY);
+
         });
 
 }
+
 /*
-    Careful running code in update, this function
+    Careful running code in update(), this function
     will run once *every* frame, very possible to 
     accidentally create evil loops! Notice I put button
     checking logic in create instead of update().
