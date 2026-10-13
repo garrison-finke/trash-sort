@@ -9,7 +9,7 @@ var config = {
     physics: {
         default: 'arcade',
         arcade: {
-            gravity: {y: 300},
+            gravity: {y: 100},
             debug: false
         }
     },
@@ -20,14 +20,18 @@ var config = {
     }
 };
 
-var verity;
+var trash;
 var scene; // keep this so I dont gotta type game.scene.scenes like 9999 times
 
 var game = new Phaser.Game(config);
 
 function preload ()
 {
-    this.load.image('smile' , 'assets/smile.png'); //temp obviosuly
+    this.load.image('apple-core' , 'assets/trash/organics-apple-core.png'); //temp obviosuly
+    this.load.image('compost' , 'assets/bins/compost.png');
+    this.load.image('recycling' , 'assets/bins/recycling.png');
+    this.load.image('special' , 'assets/bins/special-recycling.png');
+    this.load.image('trash' , 'assets/bins/trash.png');
 }
 
 function create ()
@@ -39,16 +43,30 @@ function create ()
             color: '#000000',   
         }).setOrigin(0.5);
 
+        const recyclingBin = this.add.sprite(100, 750, 'recycling');
+        recyclingBin.setScale(0.33);
+
+        const compostBin = this.add.sprite(333, 750, 'compost');
+        compostBin.setScale(0.25);
+
+        const specialRecyclingBin = this.add.sprite(566, 750, 'special');
+        specialRecyclingBin.setScale(0.40);
+
+        const trashBin = this.add.sprite(800, 750, 'trash');
+        trashBin.setScale(0.25);
+        
+
         /* 
             Place holder stuff for before we add trash. 
             Each time you click the spawn verity button, it will spawn one.
             You are able to click and drag the verities. They DO have collisions
             with the walls but collisions with eachother isnt made yet sorrey!
         */
-        verity = this.physics.add.group(); 
-        this.physics.add.collider(verity,verity); // can rem ove later if dont care about trash colliding with eachother.
+        trash = this.physics.add.group(); 
+        // this.physics.add.collider(verity,verity); // can rem ove later if dont care about trash colliding with eachother.
         document.getElementById('myBtn').addEventListener('click', () => {
-        spawnVerity(450, 450);
+        spawnTrash(300, 0);
+        spawnTrash(600, 0);
         });
 
         // Dragging
@@ -86,15 +104,15 @@ function update ()
 
 }
 
-function spawnVerity(x,y) {
-    var newVerity = verity.create(x,y, 'smile');
+function spawnTrash(x,y) {
+    var newTrash = trash.create(x,y, 'apple-core');
 
-        // Physics for verity
-        newVerity.setScale(0.2);
-        newVerity.setBounce(.5);
-        newVerity.setCollideWorldBounds(true);
+        // Physics for trash
+        newTrash.setScale(0.5);
+        // newTrash.setBounce(.5);
+        newTrash.setCollideWorldBounds(false);
 
         // Dragging stuff
-        newVerity.setInteractive();
-        scene.input.setDraggable(newVerity);
+        newTrash.setInteractive();
+        scene.input.setDraggable(newTrash);
 }
