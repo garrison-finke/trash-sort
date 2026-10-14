@@ -119,7 +119,7 @@ function create ()
             gameObject.destroy();
             spawnTrash(450, 9);
         } else if (Phaser.Geom.Intersects.RectangleToRectangle(itemRect, compostRect)) {
-            correctCheck(gameObject, 'c');
+            correctCheck(gameObject, 'o');
             gameObject.destroy();
             spawnTrash(450, 9);
         } else if (Phaser.Geom.Intersects.RectangleToRectangle(itemRect, specialtyRect)) {
