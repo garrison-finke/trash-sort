@@ -26,6 +26,10 @@ var recyclingBin;
 var compostBin;
 var specialtyBin;
 var trashBin;
+var score = 0;
+var lives = 3;
+var scoreText;
+var livesText;
 
 var scene; // keep this so I dont gotta type game.scene.scenes like 9999 times
 
@@ -36,7 +40,7 @@ function preload ()
     keys = [];
     const trash = import.meta.glob('../public/assets/trash/*.png');
     Object.entries(trash).forEach(([path]) => {
-        const key = path.split('/').pop().replace('.png', '').split('-').slice(1).join('-');
+        const key = path.split('/').pop().replace('.png', '');
         const local = path.split('/').slice(2).join('/');
         this.load.image(key, local);
         keys.push(key);
@@ -56,6 +60,18 @@ function create ()
     this.add.text(450,450, 'Trash Sort', 
         {
             fontSize: '48px',
+            color: '#000000',   
+        }).setOrigin(0.5);
+    
+    scoreText = this.add.text(100, 100, 'Score: ' + score, 
+        {
+            fontSize: '24px',
+            color: '#000000',   
+        }).setOrigin(0.5);
+
+    livesText = this.add.text(800, 100, 'Lives: ' + lives, 
+        {
+            fontSize: '24px',
             color: '#000000',   
         }).setOrigin(0.5);
 
@@ -99,15 +115,19 @@ function create ()
 
         // hitboxes are wacky ass, yo
         if (Phaser.Geom.Intersects.RectangleToRectangle(itemRect, recyclingRect)) {
+            correctCheck(gameObject, 'r');
             gameObject.destroy();
             spawnTrash(450, 9);
         } else if (Phaser.Geom.Intersects.RectangleToRectangle(itemRect, compostRect)) {
+            correctCheck(gameObject, 'c');
             gameObject.destroy();
             spawnTrash(450, 9);
         } else if (Phaser.Geom.Intersects.RectangleToRectangle(itemRect, specialtyRect)) {
+            correctCheck(gameObject, 's');
             gameObject.destroy();
             spawnTrash(450, 9);
         } else if (Phaser.Geom.Intersects.RectangleToRectangle(itemRect, trashRect)) {
+            correctCheck(gameObject, 't');
             gameObject.destroy();
             spawnTrash(450, 9);
         }
@@ -136,6 +156,7 @@ function create ()
 function update ()
 {
     if (trash != null && trash.y > 900) {
+        updateLives();
         trash.destroy();
         spawnTrash(450, 0);
     }
@@ -152,4 +173,22 @@ function spawnTrash(x,y) {
     // Dragging stuff
     trash.setInteractive();
     scene.input.setDraggable(trash);
+}
+
+function updateScore() {
+    score += 100;
+    scoreText.setText('Score: ' + score);
+}
+
+function updateLives() {
+    lives--;
+    livesText.setText('Lives: ' + lives);
+}
+
+function correctCheck(gameObject, c) {
+    if(gameObject.texture.key[0] == c) {
+                updateScore();
+    } else {
+        updateLives();
+    }
 }
