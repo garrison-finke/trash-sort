@@ -30,6 +30,10 @@ var score = 0;
 var lives = 3;
 var scoreText;
 var livesText;
+var gameStarted = false;
+var gameOver = false;
+
+var thumbnailText;
 
 var scene; // keep this so I dont gotta type game.scene.scenes like 9999 times
 
@@ -57,7 +61,8 @@ function preload ()
 function create ()
 {
     scene = this;
-    this.add.text(450,450, 'Trash Sort', 
+    
+    thumbnailText = this.add.text(450,450, 'Trash Sort', 
         {
             fontSize: '48px',
             color: '#000000',   
@@ -89,7 +94,13 @@ function create ()
     
     // this.physics.add.collider(verity,verity); // can rem ove later if dont care about trash colliding with eachother.
     document.getElementById('myBtn').addEventListener('click', () => {
-    spawnTrash(450, 0);
+        if (gameOver) {
+            restartGame();
+        } else if (!gameStarted){
+            gameStarted = true;
+            document.getElementById('myBtn').textContent = 'Playing...';
+            spawnTrash(450, 0);
+        }
     });
 
     // Dragging
@@ -117,19 +128,33 @@ function create ()
         if (Phaser.Geom.Intersects.RectangleToRectangle(itemRect, recyclingRect)) {
             correctCheck(gameObject, 'r');
             gameObject.destroy();
-            spawnTrash(450, 9);
-        } else if (Phaser.Geom.Intersects.RectangleToRectangle(itemRect, compostRect)) {
+            if (!gameOver) {
+                spawnTrash(450, 9);
+            }
+        }
+
+        else if (Phaser.Geom.Intersects.RectangleToRectangle(itemRect, compostRect)) {
             correctCheck(gameObject, 'o');
             gameObject.destroy();
-            spawnTrash(450, 9);
-        } else if (Phaser.Geom.Intersects.RectangleToRectangle(itemRect, specialtyRect)) {
+            if (!gameOver) {
+                spawnTrash(450, 9);
+            }
+        }
+
+        else if (Phaser.Geom.Intersects.RectangleToRectangle(itemRect, specialtyRect)) {
             correctCheck(gameObject, 's');
             gameObject.destroy();
-            spawnTrash(450, 9);
-        } else if (Phaser.Geom.Intersects.RectangleToRectangle(itemRect, trashRect)) {
+            if (!gameOver) {
+                spawnTrash(450, 9);
+            }
+        }
+
+        else if (Phaser.Geom.Intersects.RectangleToRectangle(itemRect, trashRect)) {
             correctCheck(gameObject, 't');
             gameObject.destroy();
-            spawnTrash(450, 9);
+            if (!gameOver) {
+                spawnTrash(450, 9);
+            }
         }
 
 
@@ -156,9 +181,14 @@ function create ()
 function update ()
 {
     if (trash != null && trash.y > 900) {
-        updateLives();
         trash.destroy();
-        spawnTrash(450, 0);
+        trash = null;
+
+        updateLives();
+
+        if (!gameOver) {
+            spawnTrash(450, 0);
+        }
     }
 }
 
@@ -183,6 +213,74 @@ function updateScore() {
 function updateLives() {
     lives--;
     livesText.setText('Lives: ' + lives);
+
+    if (lives < 0) {
+        endGame();
+    }
+}
+
+function endGame() {
+    gameOver = true;
+    if (trash != null) {
+        trash.destroy();
+        trash = null;
+    }
+
+    recyclingBin.setVisible(false);
+    compostBin.setVisible(false);
+    specialtyBin.setVisible(false);
+    trashBin.setVisible(false);
+    scoreText.setVisible(false);
+    livesText.setVisible(false);
+
+    thumbnailText.setVisible(false); // temp
+
+        // Game over message
+    scene.add.text(450, 400, 'Game Over!', {
+        fontSize: '64px',
+        color: '#000000'
+    })
+    .setOrigin(0.5)
+    .setName('gameOverText');
+
+    scene.add.text(450, 475, 'Final Score: ' + score, {
+        fontSize: '32px',
+        color: '#000000'
+    })
+    .setOrigin(0.5)
+    .setName('finalScoreText');
+
+    // Turn Verity button into restart button
+    document.getElementById('myBtn').textContent = 'Restart';
+
+}
+
+function restartGame() {
+
+    score = 0;
+    lives = 3;
+    gameOver = false;
+    gameStarted = true;
+
+    scoreText.setText('Score: ' + score);
+    livesText.setText('Lives: ' + lives);
+
+    scoreText.setVisible(true);
+    livesText.setVisible(true);
+
+    recyclingBin.setVisible(true);
+    compostBin.setVisible(true);
+    specialtyBin.setVisible(true);
+    trashBin.setVisible(true);
+
+    thumbnailText.setVisible(true); //temp
+
+    scene.children.getByName('gameOverText')?.destroy();
+    scene.children.getByName('finalScoreText')?.destroy();
+
+    document.getElementById('myBtn').textContent = 'Verity';
+
+    spawnTrash(450, 0);
 }
 
 function correctCheck(gameObject, c) {
