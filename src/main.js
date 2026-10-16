@@ -134,7 +134,7 @@ function create ()
         }
 
         else if (Phaser.Geom.Intersects.RectangleToRectangle(itemRect, compostRect)) {
-            correctCheck(gameObject, 'c');
+            correctCheck(gameObject, 'o');
             gameObject.destroy();
             if (!gameOver) {
                 spawnTrash(450, 9);
