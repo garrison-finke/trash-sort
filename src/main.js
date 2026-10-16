@@ -278,7 +278,7 @@ function restartGame() {
     scene.children.getByName('gameOverText')?.destroy();
     scene.children.getByName('finalScoreText')?.destroy();
 
-    document.getElementById('myBtn').textContent = 'Verity';
+    document.getElementById('myBtn').textContent = 'Playing';
 
     spawnTrash(450, 0);
 }
