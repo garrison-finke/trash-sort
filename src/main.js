@@ -27,11 +27,12 @@ var compostBin;
 var specialtyBin;
 var trashBin;
 var score = 0;
-var lives = 3;
+var lives = 0;
 var scoreText;
 var livesText;
 var gameStarted = false;
 var gameOver = false;
+var highScores = [];
 
 var thumbnailText;
 
@@ -62,6 +63,14 @@ function create ()
 {
     scene = this;
     
+    //temp-delete this later
+    highScores.push(500);
+    highScores.push(2000);
+    highScores.push(1000);
+    highScores.push(100);
+    highScores.push(200);
+    highScores.push(800);
+
     thumbnailText = this.add.text(450,450, 'Trash Sort', 
         {
             fontSize: '48px',
@@ -101,6 +110,43 @@ function create ()
             document.getElementById('myBtn').textContent = 'Playing...';
             spawnTrash(450, 0);
         }
+    });
+
+    document.getElementById('downloadHighScores').addEventListener('click', () => {
+        let file = '';
+        for(let i = 0; i < highScores.length; i++){
+            file += '\n' + highScores[i] + ',';
+        }
+        const blob = new Blob([file], { type: 'text/plain;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = `HighScores.txt`;
+        link.style.display = 'none';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+    });
+
+    document.getElementById('loadHighScores').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+            
+        if (!file) {
+            return;
+        }
+
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            const contents = e.target.result;
+                
+            highScores = [];
+            const split = contents.split("\n");
+            for(let i = 1; i < split.length; i++){
+                highScores.push(Number(split[i].split(",")[0]));
+            }
+        };
+        reader.readAsText(file);
     });
 
     // Dragging
@@ -233,22 +279,59 @@ function endGame() {
     scoreText.setVisible(false);
     livesText.setVisible(false);
 
+    highScores.push(score);
+
     thumbnailText.setVisible(false); // temp
 
         // Game over message
-    scene.add.text(450, 400, 'Game Over!', {
+    scene.add.text(450, 200, 'Game Over!', {
         fontSize: '64px',
         color: '#000000'
     })
     .setOrigin(0.5)
     .setName('gameOverText');
 
-    scene.add.text(450, 475, 'Final Score: ' + score, {
+    scene.add.text(450, 275, 'Final Score: ' + score, {
         fontSize: '32px',
         color: '#000000'
     })
     .setOrigin(0.5)
     .setName('finalScoreText');
+
+    scene.add.text(450, 375, 'High Scores', {
+        fontSize: '48px',
+        color: '#000000'
+    })
+    .setOrigin(0.5)
+    .setName('highScoreText');
+
+    var highestScores = [];
+    for(let i = 0; i < highScores.length; i++){
+        if(i == 0 || highScores[i] > highestScores[0]){
+            highestScores.splice(0, 0, highScores[i]);
+        }
+        else if(i == 1 || highScores[i] > highestScores[1]){
+            highestScores.splice(1, 0, highScores[i]);
+        }
+        else if(i == 2 || highScores[i] > highestScores[2]){
+            highestScores.splice(2, 0, highScores[i]);
+        }
+        else if(i == 3 || highScores[i] > highestScores[3]){
+            highestScores.splice(3, 0, highScores[i]);
+        }
+        else if(i == 4 || highScores[i] > highestScores[4]){
+            highestScores.splice(4, 0, highScores[i]);
+        }
+    }
+    
+    scene.add.text(375, 500, '1: ' + highestScores[0] + '\n2: ' + highestScores[1] + '\n3: ' + highestScores[2] +
+        '\n4: ' + highestScores[3] + '\n5: ' + highestScores[4], {
+        fontSize: '32px',
+        color: '#000000'
+    })
+    .setOrigin(0.5)
+    .setName('highScoresText');
+
 
     // Turn Verity button into restart button
     document.getElementById('myBtn').textContent = 'Restart';
@@ -277,6 +360,8 @@ function restartGame() {
 
     scene.children.getByName('gameOverText')?.destroy();
     scene.children.getByName('finalScoreText')?.destroy();
+    scene.children.getByName('highScoreText')?.destroy();
+    scene.children.getByName('highScoresText')?.destroy();
 
     document.getElementById('myBtn').textContent = 'Playing';
 
