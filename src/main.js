@@ -27,11 +27,12 @@ var compostBin;
 var specialtyBin;
 var trashBin;
 var score = 0;
-var lives = 0;
+var lives = 3;
 var scoreText;
 var livesText;
 var gameStarted = false;
 var gameOver = false;
+var selectedLevel = null;
 var highScores = [];
 
 var thumbnailText;
@@ -95,22 +96,26 @@ function create ()
     trashBin = this.add.sprite(800, 750, 'trash-bin').setScale(0.25);
 
     /* 
-        Place holder stuff for before we add trash. 
-        Each time you click the spawn verity button, it will spawn one.
-        You are able to click and drag the verities. They DO have collisions
-        with the walls but collisions with eachother isnt made yet sorrey!
-    */
-    
-    // this.physics.add.collider(verity,verity); // can rem ove later if dont care about trash colliding with eachother.
-    document.getElementById('myBtn').addEventListener('click', () => {
-        if (gameOver) {
-            restartGame();
-        } else if (!gameStarted){
-            gameStarted = true;
-            document.getElementById('myBtn').textContent = 'Playing...';
-            spawnTrash(450, 0);
-        }
-    });
+    * click da buttons to play da game
+    */ 
+    document.querySelectorAll('#levelButtons button').forEach(button => {
+        button.addEventListener('click', () => {
+            if (gameStarted)
+                return;
+
+            selectedLevel = button.dataset.level;
+            document.getElementById('levelButtons').hidden = true;
+
+            if (gameOver) {
+                restartGame();
+            } else {
+                gameStarted = true;
+                spawnTrash(450, 0);
+            }
+        })
+    })
+
+
 
     document.getElementById('downloadHighScores').addEventListener('click', () => {
         let file = '';
@@ -260,7 +265,7 @@ function updateLives() {
     lives--;
     livesText.setText('Lives: ' + lives);
 
-    if (lives < 0) {
+    if (lives < 1) {
         endGame();
     }
 }
@@ -333,12 +338,12 @@ function endGame() {
     .setName('highScoresText');
 
 
-    // Turn Verity button into restart button
-    document.getElementById('myBtn').textContent = 'Restart';
+    
+    document.getElementById('levelButtons').hidden = false;
 
 }
 
-function restartGame() {
+function restartGame() {  
 
     score = 0;
     lives = 3;
@@ -363,7 +368,6 @@ function restartGame() {
     scene.children.getByName('highScoreText')?.destroy();
     scene.children.getByName('highScoresText')?.destroy();
 
-    document.getElementById('myBtn').textContent = 'Playing';
 
     spawnTrash(450, 0);
 }
