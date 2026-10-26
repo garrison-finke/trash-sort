@@ -33,8 +33,16 @@ var livesText;
 var gameStarted = false;
 var gameOver = false;
 var selectedLevel = null;
-var highScores = [];
 
+// This is how we filter out what items show up on what level. null is everything.
+const levelItems = {
+    regular: null,
+    oss: ['organics-coffee-grounds'],
+    asc: null,
+    scc: null
+};
+
+var highScores = [];
 var thumbnailText;
 
 var scene; // keep this so I dont gotta type game.scene.scenes like 9999 times
@@ -243,15 +251,27 @@ function update ()
     }
 }
 
-function spawnTrash(x,y) {
-    let index = Math.round(Math.random() * keys.length);
-    trash = scene.physics.add.sprite(x, y, keys[index]).setScale(0.5);
+function spawnTrash(x, y) {
+    let availableKeys;
 
-    // Physics for trash
-    // newTrash.setBounce(.5);
-    // newTrash.setCollideWorldBounds(false);
+    if (levelItems[selectedLevel] !== undefined && levelItems[selectedLevel] !== null) {
+        availableKeys = levelItems[selectedLevel];
+    }
+    else {
+        availableKeys = keys;
+    }
 
-    // Dragging stuff
+    if (availableKeys.length === 0) {
+        console.error('No trash items configured for ' + selectedLevel);
+        return;
+    }
+
+    let index = Math.floor(Math.random() * availableKeys.length);
+    let selectedItem = availableKeys[index];
+
+    trash = scene.physics.add.sprite(x, y, selectedItem);
+    trash.setScale(0.5);
+
     trash.setInteractive();
     scene.input.setDraggable(trash);
 }
