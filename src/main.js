@@ -33,6 +33,7 @@ var livesText;
 var gameStarted = false;
 var gameOver = false;
 var highScores = [];
+var pb = Number(document.cookie);
 
 var thumbnailText;
 
@@ -64,12 +65,16 @@ function create ()
     scene = this;
     
     //temp-delete this later
-    highScores.push(500);
-    highScores.push(2000);
+    highScores.push(10000);
+    highScores.push(8000);
+    highScores.push(5000);
+    highScores.push(2500);
+    highScores.push(1500);
     highScores.push(1000);
-    highScores.push(100);
+    highScores.push(500);
+    highScores.push(400);
     highScores.push(200);
-    highScores.push(800);
+    
 
     thumbnailText = this.add.text(450,450, 'Trash Sort', 
         {
@@ -284,48 +289,73 @@ function endGame() {
     thumbnailText.setVisible(false); // temp
 
         // Game over message
-    scene.add.text(450, 200, 'Game Over!', {
+    scene.add.text(450, 150, 'Game Over!', {
         fontSize: '64px',
         color: '#000000'
     })
     .setOrigin(0.5)
     .setName('gameOverText');
 
-    scene.add.text(450, 275, 'Final Score: ' + score, {
+    scene.add.text(450, 225, 'Score: ' + score, {
         fontSize: '32px',
         color: '#000000'
     })
     .setOrigin(0.5)
     .setName('finalScoreText');
 
-    scene.add.text(450, 375, 'High Scores', {
+    if(score > pb){
+        pb = score;
+    }
+    scene.add.text(450, 275, 'Your Personal Best: ' + pb, {
+        fontSize: '32px',
+        color: '#000000'
+    })
+    .setOrigin(0.5)
+    .setName('personalBestText');
+
+    scene.add.text(450, 470, 'All Time High Scores', {
         fontSize: '48px',
         color: '#000000'
     })
     .setOrigin(0.5)
     .setName('highScoreText');
 
-    var highestScores = [];
-    for(let i = 0; i < highScores.length; i++){
-        if(i == 0 || highScores[i] > highestScores[0]){
-            highestScores.splice(0, 0, highScores[i]);
+    if(score > highScores[8]){
+        if(score > highScores[0]){
+            highScores.splice(0, 9, score);
+            
         }
-        else if(i == 1 || highScores[i] > highestScores[1]){
-            highestScores.splice(1, 0, highScores[i]);
+        else if(score > highScores[1]){
+            highScores.splice(1, 0, score);
         }
-        else if(i == 2 || highScores[i] > highestScores[2]){
-            highestScores.splice(2, 0, highScores[i]);
+        else if(score > highScores[2]){
+            highScores.splice(2, 0, score);
         }
-        else if(i == 3 || highScores[i] > highestScores[3]){
-            highestScores.splice(3, 0, highScores[i]);
+        else if(score > highScores[3]){
+            highScores.splice(3, 0, score);
         }
-        else if(i == 4 || highScores[i] > highestScores[4]){
-            highestScores.splice(4, 0, highScores[i]);
+        else if(score > highScores[4]){
+            highScores.splice(4, 0, score);
         }
+        else if(score > highScores[5]){
+            highScores.splice(5, 0, score);
+        }
+        else if(score > highScores[6]){
+            highScores.splice(6, 0, score);
+        }
+        else if(score > highScores[7]){
+            highScores.splice(7, 0, score);
+        }
+        else if(score > highScores[8]){
+            highScores.splice(8, 0, score);
+        }
+        highScores.splice(9, 1);
+        console.log(highScores);
     }
     
-    scene.add.text(375, 500, '1: ' + highestScores[0] + '\n2: ' + highestScores[1] + '\n3: ' + highestScores[2] +
-        '\n4: ' + highestScores[3] + '\n5: ' + highestScores[4], {
+    scene.add.text(240, 650, '1: ' + highScores[0] + '\n2: ' + highScores[1] + '\n3: ' + highScores[2] +
+        '\n4: ' + highScores[3] + '\n5: ' + highScores[4] + '\n6: ' + highScores[5] + 
+        '\n7: ' + highScores[6] + '\n8: ' + highScores[7] + '\n9: ' + highScores[8], {
         fontSize: '32px',
         color: '#000000'
     })
@@ -362,6 +392,7 @@ function restartGame() {
     scene.children.getByName('finalScoreText')?.destroy();
     scene.children.getByName('highScoreText')?.destroy();
     scene.children.getByName('highScoresText')?.destroy();
+    scene.children.getByName('personalBestText')?.destroy();
 
     document.getElementById('myBtn').textContent = 'Playing';
 
