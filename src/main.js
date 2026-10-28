@@ -27,13 +27,99 @@ var compostBin;
 var specialtyBin;
 var trashBin;
 var score = 0;
-var lives = 0;
+var lives = 3;
 var scoreText;
 var livesText;
 var gameStarted = false;
 var gameOver = false;
-var highScores = [];
+var selectedLevel = null;
 
+// This is how we filter out what items show up on what level. null is everything.
+const levelItems = {
+    regular: null,
+
+    // O'Shaughnessy Science Hall: classrooms, offices, and labs
+    oss: [
+        'organics-apple-core',
+        'organics-coffee-cup',
+        'organics-coffee-sleeve',
+        'organics-napkin',
+        'organics-teabag',
+
+        'recycling-aluminum-can',
+        'recycling-cardboard',
+        'recycling-glass-bottle',
+        'recycling-paper',
+        'recycling-plastic-containers',
+
+        'specialty-batteries',
+        'specialty-computer-part',
+        'specialty-lightbulb',
+        'specialty-plastic-bag',
+
+        'trash-chip-bag',
+        'trash-gum',
+        'trash-utensil'
+    ],
+
+    // Anderson Student Center: dining, coffee, and events
+    asc: [
+        'organics-apple-core',
+        'organics-cheeseburger',
+        'organics-chicken-bone',
+        'organics-coffee-cup',
+        'organics-coffee-grounds',
+        'organics-coffee-sleeve',
+        'organics-cutlery',
+        'organics-flowers',
+        'organics-napkin',
+        'organics-napkins',
+        'organics-plate',
+        'organics-teabag',
+
+        'recycling-aluminum-can',
+        'recycling-cardboard',
+        'recycling-carton',
+        'recycling-glass-bottle',
+        'recycling-paper',
+        'recycling-plastic-containers',
+
+        'trash-catering-tray',
+        'trash-chip-bag',
+        'trash-gum',
+        'trash-ketchup-packet',
+        'trash-utensil'
+    ],
+
+    // Schoenecker Center: engineering, arts, and STEAM Cafe
+    scc: [
+        'organics-apple-core',
+        'organics-coffee-cup',
+        'organics-coffee-grounds',
+        'organics-coffee-sleeve',
+        'organics-cutlery',
+        'organics-napkin',
+        'organics-teabag',
+
+        'recycling-aluminum-can',
+        'recycling-cardboard',
+        'recycling-carton',
+        'recycling-glass-bottle',
+        'recycling-paper',
+        'recycling-plastic-containers',
+
+        'specialty-batteries',
+        'specialty-computer-part',
+        'specialty-lightbulb',
+        'specialty-plastic-bag',
+
+        'trash-chip-bag',
+        'trash-gum',
+        'trash-utensil'
+    ]
+};
+
+var highScores = [];
 var thumbnailText;
 
 var scene; // keep this so I dont gotta type game.scene.scenes like 9999 times
@@ -50,6 +136,9 @@ function preload ()
         this.load.image(key, local);
         keys.push(key);
     });
+
+    console.log(keys);
+
 
     const bins = import.meta.glob('../public/assets/bins/*.png');
     Object.entries(bins).forEach(([path]) => {
@@ -95,22 +184,26 @@ function create ()
     trashBin = this.add.sprite(800, 750, 'trash-bin').setScale(0.25);
 
     /* 
-        Place holder stuff for before we add trash. 
-        Each time you click the spawn verity button, it will spawn one.
-        You are able to click and drag the verities. They DO have collisions
-        with the walls but collisions with eachother isnt made yet sorrey!
-    */
-    
-    // this.physics.add.collider(verity,verity); // can rem ove later if dont care about trash colliding with eachother.
-    document.getElementById('myBtn').addEventListener('click', () => {
-        if (gameOver) {
-            restartGame();
-        } else if (!gameStarted){
-            gameStarted = true;
-            document.getElementById('myBtn').textContent = 'Playing...';
-            spawnTrash(450, 0);
-        }
-    });
+    * click da buttons to play da game
+    */ 
+    document.querySelectorAll('#levelButtons button').forEach(button => {
+        button.addEventListener('click', () => {
+            if (gameStarted)
+                return;
+
+            selectedLevel = button.dataset.level;
+            document.getElementById('levelButtons').hidden = true;
+
+            if (gameOver) {
+                restartGame();
+            } else {
+                gameStarted = true;
+                spawnTrash(450, 0);
+            }
+        })
+    })
+
+
 
     document.getElementById('downloadHighScores').addEventListener('click', () => {
         let file = '';
@@ -238,15 +331,27 @@ function update ()
     }
 }
 
-function spawnTrash(x,y) {
-    let index = Math.round(Math.random() * keys.length);
-    trash = scene.physics.add.sprite(x, y, keys[index]).setScale(0.5);
+function spawnTrash(x, y) {
+    let availableKeys;
 
-    // Physics for trash
-    // newTrash.setBounce(.5);
-    // newTrash.setCollideWorldBounds(false);
+    if (levelItems[selectedLevel] !== undefined && levelItems[selectedLevel] !== null) {
+        availableKeys = levelItems[selectedLevel];
+    }
+    else {
+        availableKeys = keys;
+    }
 
-    // Dragging stuff
+    if (availableKeys.length === 0) {
+        console.error('No trash items configured for ' + selectedLevel);
+        return;
+    }
+
+    let index = Math.floor(Math.random() * availableKeys.length);
+    let selectedItem = availableKeys[index];
+
+    trash = scene.physics.add.sprite(x, y, selectedItem);
+    trash.setScale(0.5);
+
     trash.setInteractive();
     scene.input.setDraggable(trash);
 }
@@ -260,13 +365,14 @@ function updateLives() {
     lives--;
     livesText.setText('Lives: ' + lives);
 
-    if (lives < 0) {
+    if (lives < 1) {
         endGame();
     }
 }
 
 function endGame() {
     gameOver = true;
+    gameStarted = false;
     if (trash != null) {
         trash.destroy();
         trash = null;
@@ -333,12 +439,12 @@ function endGame() {
     .setName('highScoresText');
 
 
-    // Turn Verity button into restart button
-    document.getElementById('myBtn').textContent = 'Restart';
+    
+    document.getElementById('levelButtons').hidden = false;
 
 }
 
-function restartGame() {
+function restartGame() {  
 
     score = 0;
     lives = 3;
@@ -363,7 +469,6 @@ function restartGame() {
     scene.children.getByName('highScoreText')?.destroy();
     scene.children.getByName('highScoresText')?.destroy();
 
-    document.getElementById('myBtn').textContent = 'Playing';
 
     spawnTrash(450, 0);
 }
