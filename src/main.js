@@ -152,14 +152,22 @@ function create ()
 {
     scene = this;
     
-    //temp-delete this later
-    highScores.push(500);
-    highScores.push(2000);
-    highScores.push(1000);
-    highScores.push(100);
-    highScores.push(200);
-    highScores.push(800);
-
+    if(document.cookie === ""){
+        highScores.push(500);
+        highScores.push(400);
+        highScores.push(300);
+        highScores.push(200);
+        highScores.push(100);
+    }
+    else{
+        let s = document.cookie.split(";")[0].split(",");
+        highScores[0] = Number(s[0]);
+        highScores[1] = Number(s[1]);
+        highScores[2] = Number(s[2]);
+        highScores[3] = Number(s[3]);
+        highScores[4] = Number(s[4]);
+    }
+    
     thumbnailText = this.add.text(450,450, 'Trash Sort', 
         {
             fontSize: '48px',
@@ -385,8 +393,6 @@ function endGame() {
     scoreText.setVisible(false);
     livesText.setVisible(false);
 
-    highScores.push(score);
-
     thumbnailText.setVisible(false); // temp
 
         // Game over message
@@ -411,34 +417,33 @@ function endGame() {
     .setOrigin(0.5)
     .setName('highScoreText');
 
-    var highestScores = [];
-    for(let i = 0; i < highScores.length; i++){
-        if(i == 0 || highScores[i] > highestScores[0]){
-            highestScores.splice(0, 0, highScores[i]);
-        }
-        else if(i == 1 || highScores[i] > highestScores[1]){
-            highestScores.splice(1, 0, highScores[i]);
-        }
-        else if(i == 2 || highScores[i] > highestScores[2]){
-            highestScores.splice(2, 0, highScores[i]);
-        }
-        else if(i == 3 || highScores[i] > highestScores[3]){
-            highestScores.splice(3, 0, highScores[i]);
-        }
-        else if(i == 4 || highScores[i] > highestScores[4]){
-            highestScores.splice(4, 0, highScores[i]);
-        }
+    if(score > highScores[0]){
+        highScores.splice(0, 0, score);
     }
+    else if(score > highScores[1]){
+        highScores.splice(1, 0, score);
+    }
+    else if(score > highScores[2]){
+        highScores.splice(2, 0, score);
+    }
+    else if(score > highScores[3]){
+        highScores.splice(3, 0, score);
+    }
+    else if(score > highScores[4]){
+        highScores.splice(4, 0, score);
+    }
+    highScores.splice(5, 1);
     
-    scene.add.text(375, 500, '1: ' + highestScores[0] + '\n2: ' + highestScores[1] + '\n3: ' + highestScores[2] +
-        '\n4: ' + highestScores[3] + '\n5: ' + highestScores[4], {
+    scene.add.text(375, 500, '1: ' + highScores[0] + '\n2: ' + highScores[1] + '\n3: ' + highScores[2] +
+        '\n4: ' + highScores[3] + '\n5: ' + highScores[4], {
         fontSize: '32px',
         color: '#000000'
     })
     .setOrigin(0.5)
     .setName('highScoresText');
 
-
+    document.cookie = (highScores[0] + "," + highScores[1] + "," + highScores[2] + "," + 
+        highScores[3] + "," + highScores[4] + "; max-age=315360000");
     
     document.getElementById('levelButtons').hidden = false;
 
