@@ -27,14 +27,99 @@ var compostBin;
 var specialtyBin;
 var trashBin;
 var score = 0;
-var lives = 0;
+var lives = 3;
 var scoreText;
 var livesText;
 var gameStarted = false;
 var gameOver = false;
-var highScores = [];
-var pb = Number(document.cookie);
+var selectedLevel = null;
 
+// This is how we filter out what items show up on what level. null is everything.
+const levelItems = {
+    regular: null,
+
+    // O'Shaughnessy Science Hall: classrooms, offices, and labs
+    oss: [
+        'organics-apple-core',
+        'organics-coffee-cup',
+        'organics-coffee-sleeve',
+        'organics-napkin',
+        'organics-teabag',
+
+        'recycling-aluminum-can',
+        'recycling-cardboard',
+        'recycling-glass-bottle',
+        'recycling-paper',
+        'recycling-plastic-containers',
+
+        'specialty-batteries',
+        'specialty-computer-part',
+        'specialty-lightbulb',
+        'specialty-plastic-bag',
+
+        'trash-chip-bag',
+        'trash-gum',
+        'trash-utensil'
+    ],
+
+    // Anderson Student Center: dining, coffee, and events
+    asc: [
+        'organics-apple-core',
+        'organics-cheeseburger',
+        'organics-chicken-bone',
+        'organics-coffee-cup',
+        'organics-coffee-grounds',
+        'organics-coffee-sleeve',
+        'organics-cutlery',
+        'organics-flowers',
+        'organics-napkin',
+        'organics-napkins',
+        'organics-plate',
+        'organics-teabag',
+
+        'recycling-aluminum-can',
+        'recycling-cardboard',
+        'recycling-carton',
+        'recycling-glass-bottle',
+        'recycling-paper',
+        'recycling-plastic-containers',
+
+        'trash-catering-tray',
+        'trash-chip-bag',
+        'trash-gum',
+        'trash-ketchup-packet',
+        'trash-utensil'
+    ],
+
+    // Schoenecker Center: engineering, arts, and STEAM Cafe
+    scc: [
+        'organics-apple-core',
+        'organics-coffee-cup',
+        'organics-coffee-grounds',
+        'organics-coffee-sleeve',
+        'organics-cutlery',
+        'organics-napkin',
+        'organics-teabag',
+
+        'recycling-aluminum-can',
+        'recycling-cardboard',
+        'recycling-carton',
+        'recycling-glass-bottle',
+        'recycling-paper',
+        'recycling-plastic-containers',
+
+        'specialty-batteries',
+        'specialty-computer-part',
+        'specialty-lightbulb',
+        'specialty-plastic-bag',
+
+        'trash-chip-bag',
+        'trash-gum',
+        'trash-utensil'
+    ]
+};
+
+var highScores = [];
 var thumbnailText;
 
 var scene; // keep this so I dont gotta type game.scene.scenes like 9999 times
@@ -52,6 +137,9 @@ function preload ()
         keys.push(key);
     });
 
+    console.log(keys);
+
+
     const bins = import.meta.glob('../public/assets/bins/*.png');
     Object.entries(bins).forEach(([path]) => {
         const key = path.split('/').pop().replace('.png', '-bin');
@@ -65,16 +153,12 @@ function create ()
     scene = this;
     
     //temp-delete this later
-    highScores.push(10000);
-    highScores.push(8000);
-    highScores.push(5000);
-    highScores.push(2500);
-    highScores.push(1500);
-    highScores.push(1000);
     highScores.push(500);
-    highScores.push(400);
+    highScores.push(2000);
+    highScores.push(1000);
+    highScores.push(100);
     highScores.push(200);
-    
+    highScores.push(800);
 
     thumbnailText = this.add.text(450,450, 'Trash Sort', 
         {
@@ -100,22 +184,26 @@ function create ()
     trashBin = this.add.sprite(800, 750, 'trash-bin').setScale(0.25);
 
     /* 
-        Place holder stuff for before we add trash. 
-        Each time you click the spawn verity button, it will spawn one.
-        You are able to click and drag the verities. They DO have collisions
-        with the walls but collisions with eachother isnt made yet sorrey!
-    */
-    
-    // this.physics.add.collider(verity,verity); // can rem ove later if dont care about trash colliding with eachother.
-    document.getElementById('myBtn').addEventListener('click', () => {
-        if (gameOver) {
-            restartGame();
-        } else if (!gameStarted){
-            gameStarted = true;
-            document.getElementById('myBtn').textContent = 'Playing...';
-            spawnTrash(450, 0);
-        }
-    });
+    * click da buttons to play da game
+    */ 
+    document.querySelectorAll('#levelButtons button').forEach(button => {
+        button.addEventListener('click', () => {
+            if (gameStarted)
+                return;
+
+            selectedLevel = button.dataset.level;
+            document.getElementById('levelButtons').hidden = true;
+
+            if (gameOver) {
+                restartGame();
+            } else {
+                gameStarted = true;
+                spawnTrash(450, 0);
+            }
+        })
+    })
+
+
 
     document.getElementById('downloadHighScores').addEventListener('click', () => {
         let file = '';
@@ -243,15 +331,27 @@ function update ()
     }
 }
 
-function spawnTrash(x,y) {
-    let index = Math.round(Math.random() * keys.length);
-    trash = scene.physics.add.sprite(x, y, keys[index]).setScale(0.5);
+function spawnTrash(x, y) {
+    let availableKeys;
 
-    // Physics for trash
-    // newTrash.setBounce(.5);
-    // newTrash.setCollideWorldBounds(false);
+    if (levelItems[selectedLevel] !== undefined && levelItems[selectedLevel] !== null) {
+        availableKeys = levelItems[selectedLevel];
+    }
+    else {
+        availableKeys = keys;
+    }
 
-    // Dragging stuff
+    if (availableKeys.length === 0) {
+        console.error('No trash items configured for ' + selectedLevel);
+        return;
+    }
+
+    let index = Math.floor(Math.random() * availableKeys.length);
+    let selectedItem = availableKeys[index];
+
+    trash = scene.physics.add.sprite(x, y, selectedItem);
+    trash.setScale(0.5);
+
     trash.setInteractive();
     scene.input.setDraggable(trash);
 }
@@ -265,13 +365,14 @@ function updateLives() {
     lives--;
     livesText.setText('Lives: ' + lives);
 
-    if (lives < 0) {
+    if (lives < 1) {
         endGame();
     }
 }
 
 function endGame() {
     gameOver = true;
+    gameStarted = false;
     if (trash != null) {
         trash.destroy();
         trash = null;
@@ -289,73 +390,48 @@ function endGame() {
     thumbnailText.setVisible(false); // temp
 
         // Game over message
-    scene.add.text(450, 150, 'Game Over!', {
+    scene.add.text(450, 200, 'Game Over!', {
         fontSize: '64px',
         color: '#000000'
     })
     .setOrigin(0.5)
     .setName('gameOverText');
 
-    scene.add.text(450, 225, 'Score: ' + score, {
+    scene.add.text(450, 275, 'Final Score: ' + score, {
         fontSize: '32px',
         color: '#000000'
     })
     .setOrigin(0.5)
     .setName('finalScoreText');
 
-    if(score > pb){
-        pb = score;
-    }
-    scene.add.text(450, 275, 'Your Personal Best: ' + pb, {
-        fontSize: '32px',
-        color: '#000000'
-    })
-    .setOrigin(0.5)
-    .setName('personalBestText');
-
-    scene.add.text(450, 470, 'All Time High Scores', {
+    scene.add.text(450, 375, 'High Scores', {
         fontSize: '48px',
         color: '#000000'
     })
     .setOrigin(0.5)
     .setName('highScoreText');
 
-    if(score > highScores[8]){
-        if(score > highScores[0]){
-            highScores.splice(0, 9, score);
-            
+    var highestScores = [];
+    for(let i = 0; i < highScores.length; i++){
+        if(i == 0 || highScores[i] > highestScores[0]){
+            highestScores.splice(0, 0, highScores[i]);
         }
-        else if(score > highScores[1]){
-            highScores.splice(1, 0, score);
+        else if(i == 1 || highScores[i] > highestScores[1]){
+            highestScores.splice(1, 0, highScores[i]);
         }
-        else if(score > highScores[2]){
-            highScores.splice(2, 0, score);
+        else if(i == 2 || highScores[i] > highestScores[2]){
+            highestScores.splice(2, 0, highScores[i]);
         }
-        else if(score > highScores[3]){
-            highScores.splice(3, 0, score);
+        else if(i == 3 || highScores[i] > highestScores[3]){
+            highestScores.splice(3, 0, highScores[i]);
         }
-        else if(score > highScores[4]){
-            highScores.splice(4, 0, score);
+        else if(i == 4 || highScores[i] > highestScores[4]){
+            highestScores.splice(4, 0, highScores[i]);
         }
-        else if(score > highScores[5]){
-            highScores.splice(5, 0, score);
-        }
-        else if(score > highScores[6]){
-            highScores.splice(6, 0, score);
-        }
-        else if(score > highScores[7]){
-            highScores.splice(7, 0, score);
-        }
-        else if(score > highScores[8]){
-            highScores.splice(8, 0, score);
-        }
-        highScores.splice(9, 1);
-        console.log(highScores);
     }
     
-    scene.add.text(240, 650, '1: ' + highScores[0] + '\n2: ' + highScores[1] + '\n3: ' + highScores[2] +
-        '\n4: ' + highScores[3] + '\n5: ' + highScores[4] + '\n6: ' + highScores[5] + 
-        '\n7: ' + highScores[6] + '\n8: ' + highScores[7] + '\n9: ' + highScores[8], {
+    scene.add.text(375, 500, '1: ' + highestScores[0] + '\n2: ' + highestScores[1] + '\n3: ' + highestScores[2] +
+        '\n4: ' + highestScores[3] + '\n5: ' + highestScores[4], {
         fontSize: '32px',
         color: '#000000'
     })
@@ -363,12 +439,12 @@ function endGame() {
     .setName('highScoresText');
 
 
-    // Turn Verity button into restart button
-    document.getElementById('myBtn').textContent = 'Restart';
+    
+    document.getElementById('levelButtons').hidden = false;
 
 }
 
-function restartGame() {
+function restartGame() {  
 
     score = 0;
     lives = 3;
@@ -392,9 +468,7 @@ function restartGame() {
     scene.children.getByName('finalScoreText')?.destroy();
     scene.children.getByName('highScoreText')?.destroy();
     scene.children.getByName('highScoresText')?.destroy();
-    scene.children.getByName('personalBestText')?.destroy();
 
-    document.getElementById('myBtn').textContent = 'Playing';
 
     spawnTrash(450, 0);
 }

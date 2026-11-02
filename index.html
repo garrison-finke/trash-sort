@@ -8,7 +8,15 @@
 </head>
 <body>
     <script type = "module" src = "/src/main.js"></script>
-    <button type = "button" id = "myBtn">Start</button>
+
+    <div id="levelButtons">
+        <button type="button" data-level="regular">Regular</button>
+        <button type="button" data-level="oss">OSS</button>
+        <button type="button" data-level="asc">ASC</button>
+        <button type="button" data-level="scc">SCC</button>        
+    </div>
+    
+
     <button type = "button" id="downloadHighScores">Download High Scores</button>
     <input type = "file" id="loadHighScores" accept=".txt"/>
 </body>
