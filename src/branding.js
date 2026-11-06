@@ -1,0 +1,45 @@
+const colors = {
+    black: 0x000000,
+    white: 0xffffff,
+    darkPurple: 0x510c76,
+    brightPurple: 0x9e28b5,
+    mediumPurple100: 0x8348ad,
+    mediumPurple90: 0x9059b5,
+    mediumPurple80: 0x9d6bbd,
+    mediumPurple70: 0xa97cc6,
+    mediumPurple60: 0xb68fce,
+    mediumPurple50: 0xc2a0d6,
+    mediumPurple40: 0xceb3de,
+    mediumPurple30: 0xdac5e6,
+    mediumPurple20: 0xe6d8ee,
+    mediumPurple10: 0xf2eaf6,
+    coolGray100: 0x98999b,
+    coolGray90: 0x9ea1af,
+    coolGray80: 0xa8abae,
+    coolGray70: 0xb2b5b7,
+    coolGray60: 0xbdbfc1,
+    coolGray50: 0xc7c9cb,
+    coolGray40: 0xd2d4d5,
+    coolGray30: 0xdddedf,
+    coolGray20: 0xe8e9e9,
+    coolGray10: 0xf3f3f3,
+    emeraldGreen100: 0x4c9c2e,
+    emeraldGreen90: 0x60a644,
+    emeraldGreen80: 0x73b059,
+    emeraldGreen70: 0x84ba6d,
+    emeraldGreen60: 0x96c482,
+    emeraldGreen50: 0xa8cd95,
+    emeraldGreen40: 0xb9d7aa,
+    emeraldGreen30: 0xcae1be,
+    emeraldGreen20: 0xdbead3,
+    emeraldGreen10: 0xecf4e8,
+}
+
+function preloadFonts(scene) {
+    scene.load.font('avenir_regular', 'assets/fonts/Avenir_Next_LT_Pro_Regular.otf', 'opentype');
+    scene.load.font('avenir_demi', 'assets/fonts/Avenir_Next_LT_Pro_Demi.otf', 'opentype');
+    scene.load.font('bodoni_regular', 'assets/fonts/BodoniModa_9pt-Regular.ttf', 'truetype');
+    scene.load.font('bodoni_semibold', 'assets/fonts/BodoniModa_9pt-SemiBold.ttf', 'truetype');
+}
+
+export {colors, preloadFonts};
