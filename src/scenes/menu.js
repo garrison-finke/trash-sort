@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
-import {colors, preloadFonts} from '../branding.js';
+import {preloadFonts} from '../preloading.js';
+import {colors} from '../colors.js';
 import {Button} from '../button.js';
 
 class MenuScene extends Phaser.Scene {
@@ -9,7 +10,7 @@ class MenuScene extends Phaser.Scene {
     }
     
     create() {
-        const menu = this;
+        let menu = this;
 
         menu.add.text(450, 300, 'Welcome to TRASH SORT', {
             fontFamily: 'avenir_regular',
@@ -29,7 +30,7 @@ class MenuScene extends Phaser.Scene {
         let levelSelectButton = new Button(menu, 450, 550, 'LEVEL SELECT');
         levelSelectButton.on('pointerdown',
             function (pointer) {
-                // menu.scene.start('levelSelect');
+                menu.scene.start('level_select');
             }
         );
         menu.add.existing(levelSelectButton);
@@ -37,7 +38,7 @@ class MenuScene extends Phaser.Scene {
         let trashGalleryButton = new Button(menu, 450, 650, 'TRASH GALLERY');
         trashGalleryButton.on('pointerdown', 
             function (pointer) {
-                // menu.scene.start('levelSelect');
+                menu.scene.start('gallery');
             }
         );
         menu.add.existing(trashGalleryButton);

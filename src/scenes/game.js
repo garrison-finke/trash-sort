@@ -1,186 +1,174 @@
 import Phaser from 'phaser';
+import {preloadTrash, preloadBins} from '../preloading.js';
+import {colors} from '../colors.js'
+import {Trash} from '../trash.js';
 
 class GameScene extends Phaser.Scene {
+
     constructor(key) {
         super(key);
         this.keys = [];
-        this.trash = null;
-        this.score = 0;
-        this.lives = 3;
-
-        this.thumbnailText;
         this.scoreText;
         this.livesText;
-        /*
-        let thumbnailText = this.add.text(450,450, 'Trash Sort', 
-            {
-                fontSize: '48px',
-                color: '#000000',   
-            }).setOrigin(0.5);
-        
-        let scoreText = this.add.text(100, 100, 'Score: ' + score, 
-            {
-                fontSize: '24px',
-                color: '#000000',   
-            }).setOrigin(0.5);
-
-        let livesText = this.add.text(800, 100, 'Lives: ' + lives, 
-            {
-                fontSize: '24px',
-                color: '#000000',   
-            }).setOrigin(0.5);
-        */
+        this.recyclingBin;
+        this.organicsBin;
+        this.specialtyBin;
+        this.trashBin;
     }
-    preload() {
-        let trash = import.meta.glob('../../public/assets/trash/*.png');
-        Object.entries(trash).forEach(([path]) => {
-            let key = path.split('/').pop().replace('.png', '');
-            let local = path.split('/').slice(2).join('/');
-            this.load.image(key, local);
-            this.keys.push(key);
-        });
 
-        const bins = import.meta.glob('../../public/assets/bins/*.png');
-        Object.entries(bins).forEach(([path]) => {
-            const key = path.split('/').pop().replace('.png', '-bin');
-            const local = path.split('/').slice(2).join('/');
-            this.load.image(key, local);
-        });
+    init() {
+        this.score = 0;
+        this.lives = 3;
+    }
+
+    preload() {
+        this.keys = preloadTrash(this);
+        preloadBins(this);
     }
 
     create() {
         let game = this;
-        var gameOver = false;
-        // var selectedLevel = null;
 
-        // var highScores = [];
-        
-        /*
-        //temp-delete this later
-        highScores.push(500);
-        highScores.push(2000);
-        highScores.push(1000);
-        highScores.push(100);
-        highScores.push(200);
-        highScores.push(800);
-        */
+        let recyclingBin = new Phaser.GameObjects.Image(this, 100, 750, 'recycling-bin');
+        let organicsBin = new Phaser.GameObjects.Image(this, 333, 750, 'organics-bin');
+        let specialtyBin = new Phaser.GameObjects.Image(this, 567, 750, 'specialty-bin');
+        let trashBin = new Phaser.GameObjects.Image(this, 800, 750, 'trash-bin')
 
-        game.add.image(100, 750, 'recycling-bin').setScale(0.33);
-        game.add.image(333, 750, 'organics-bin').setScale(0.25);
-        game.add.image(566, 750, 'specialty-bin').setScale(0.40);
-        game.add.image(800, 750, 'trash-bin').setScale(0.25);
-        
-        game.spawnTrash(450, 10);
-        /*
-        // Dragging
-        this.input.on('dragstart', function (pointer, gameObject) {
-            gameObject.body.setAllowGravity(false);
-            gameObject.setVelocity(0, 0);
-        });
+        recyclingBin.setScale(0.33);
+        organicsBin.setScale(0.25);
+        specialtyBin.setScale(0.40);
+        trashBin.setScale(0.25);
 
-        this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
-            gameObject.x = dragX;
-            gameObject.y = dragY;
-        });        
+        this.add.existing(recyclingBin);
+        this.add.existing(organicsBin);
+        this.add.existing(specialtyBin);
+        this.add.existing(trashBin);
 
-        this.input.on('dragend', function (pointer, gameObject) {
+        this.scoreText = this.add.text(100, 100, 'Score: ' + this.score, {
+            fontFamily: 'avenir_regular',
+            fontSize: '24px',
+            color: Phaser.Display.Color.IntegerToColor(colors.black).rgba,   
+        }).setOrigin(0.5);
+        this.add.existing(this.scoreText);
 
-            gameObject.body.setAllowGravity(true);
+        this.livesText = this.add.text(100, 200, 'Lives: ' + this.lives, {
+            fontFamily: 'avenir_regular',
+            fontSize: '24px',
+            color: Phaser.Display.Color.IntegerToColor(colors.black).rgba,   
+        }).setOrigin(0.5);
+        this.add.existing(this.livesText)
 
-            const itemRect = gameObject.getBounds();
-
-            if (Phaser.Geom.Intersects.RectangleToRectangle(itemRect, recyclingBin.getBounds())) {
-                correctCheck(gameObject, 'r');
-                gameObject.destroy();
-                if (!gameOver) {
-                    spawnTrash(450, 9);
+        this.trash = new Trash(this);
+        this.trash.spawn(this.keys, 450, 10); 
+        this.trash.on('dragend', 
+            function (pointer) {
+                game.trash.body.setAllowGravity(true);
+                let trashRect = game.trash.getBounds();
+                if (Phaser.Geom.Intersects.RectangleToRectangle(trashRect, recyclingBin.getBounds())) {
+                    game.correctCheck(game.trash, 'r');
+                } else if (Phaser.Geom.Intersects.RectangleToRectangle(trashRect, organicsBin.getBounds())) {
+                    game.correctCheck(game.trash, 'o');
+                } else if (Phaser.Geom.Intersects.RectangleToRectangle(trashRect, specialtyBin.getBounds())) {
+                    game.correctCheck(game.trash, 's');
+                } else if (Phaser.Geom.Intersects.RectangleToRectangle(trashRect, trashBin.getBounds())) {
+                    game.correctCheck(game.trash, 't');
                 }
+                game.trash.spawn(game.keys, 450, 10);
             }
-
-            else if (Phaser.Geom.Intersects.RectangleToRectangle(itemRect, compostBin.getBounds())) {
-                correctCheck(gameObject, 'o');
-                gameObject.destroy();
-                if (!gameOver) {
-                    spawnTrash(450, 9);
-                }
-            }
-
-            else if (Phaser.Geom.Intersects.RectangleToRectangle(itemRect, specialtyBin.getBounds())) {
-                correctCheck(gameObject, 's');
-                gameObject.destroy();
-                if (!gameOver) {
-                    spawnTrash(450, 9);
-                }
-            }
-
-            else if (Phaser.Geom.Intersects.RectangleToRectangle(itemRect, trashBin.getBounds())) {
-                correctCheck(gameObject, 't');
-                gameObject.destroy();
-                if (!gameOver) {
-                    spawnTrash(450, 9);
-                }
-            }
-        });
-        this.spawnTrash(450, 9);
-        */
+        );
     }
 
     update() {
         if (this.trash != null && this.trash.y > 900) {
-            this.trash.destroy();
-            this.trash = null;
-
             this.updateLives();
-
-            if (!this.gameOver) {
-                this.spawnTrash(450, 0);
-            }
+            this.trash.spawn(this.keys, 450, 10);
         }
     }
-    
-    spawnTrash(x, y) {
-        /*
-        let availableKeys;
 
-        if (levelItems[selectedLevel] !== undefined && levelItems[selectedLevel] !== null) {
-            availableKeys = levelItems[selectedLevel];
+    correctCheck(gameObject, c) {
+        if(gameObject.texture.key[0] == c) {
+            this.updateScore();
+        } else {
+            this.updateLives();
         }
-        else {
-            availableKeys = keys;
-        }
-
-        if (availableKeys.length === 0) {
-            console.error('No trash items configured for ' + selectedLevel);
-            return;
-        }
-        
-        let index = Math.floor(Math.random() * availableKeys.length);
-        let selectedItem = availableKeys[index];
-        */
-        let index = Math.floor(Math.random() * this.keys.length);
-        let selectedItem = this.keys[index]
-        this.trash = this.physics.add.image(x, y, selectedItem);
-        this.trash.setScale(0.5);
-        this.trash.setInteractive();
-        this.input.setDraggable(this.trash);
     }
-    /*
     updateScore() {
-        score += 100;
-        scoreText.setText('Score: ' + score);
+        this.score += 100;
+        this.scoreText.setText('Score: ' + this.score);
     }
-    */
     updateLives() {
-        let game = this;
-        game.lives--;
-        //livesText.setText('Lives: ' + lives);
-
-        if (game.lives < 1) {
-            game.scene.start('gameover');
-            //endGame();
+        this.lives--;
+        this.livesText.setText('Lives: ' + this.lives);
+        if (this.lives < 1) {
+            this.scene.start('game_over');
         }
     }
-    /*
+
+    
+}
+
+export {GameScene};
+
+/*
+// We will change this to be scalable based on the user viewpoer dimensions, for now just keep it static.
+var config = {
+    type: Phaser.AUTO,
+    width: 900,
+    height: 900,
+    backgroundColor: 'rgb(219, 189, 232)',
+    physics: {
+        default: 'arcade',
+        arcade: {
+            gravity: {y: 100},
+            debug: false
+        }
+    },
+    scene: {
+        preload: preload,
+        create: create,
+        update: update
+    }
+};
+
+document.getElementById('downloadHighScores').addEventListener('click', () => {
+    let file = '';
+    for(let i = 0; i < highScores.length; i++){
+        file += '\n' + highScores[i] + ',';
+    }
+    const blob = new Blob([file], { type: 'text/plain;charset=utf-8' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = `HighScores.txt`;
+    link.style.display = 'none';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(link.href);
+});
+
+
+document.getElementById('loadHighScores').addEventListener('change', function(event) {
+    const file = event.target.files[0];
+        
+    if (!file) {
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = function(e) {
+        const contents = e.target.result;
+            
+        highScores = [];
+        const split = contents.split("\n");
+        for(let i = 1; i < split.length; i++){
+            highScores.push(Number(split[i].split(",")[0]));
+        }
+    };
+    reader.readAsText(file);
+});
+*/ 
+/*
     endGame() {
         gameOver = true;
         gameStarted = false;
@@ -284,92 +272,9 @@ class GameScene extends Phaser.Scene {
         spawnTrash(450, 0);
     }
 
-    correctCheck(gameObject, c) {
-        if(gameObject.texture.key[0] == c) {
-            updateScore();
-        } else {
-            updateLives();
-        }
-    }
+
     */
-}
 
-export {GameScene};
+// var selectedLevel = null;
 
-/*
-document.querySelectorAll('#levelButtons button').forEach(button => {
-    button.addEventListener('click', () => {
-        if (gameStarted)
-            return;
-
-        selectedLevel = button.dataset.level;
-        document.getElementById('levelButtons').hidden = true;
-
-        if (gameOver) {
-            restartGame();
-        } else {
-            gameStarted = true;
-            spawnTrash(450, 0);
-        }
-    })
-})
-
-/*
-// We will change this to be scalable based on the user viewpoer dimensions, for now just keep it static.
-var config = {
-    type: Phaser.AUTO,
-    width: 900,
-    height: 900,
-    backgroundColor: 'rgb(219, 189, 232)',
-    physics: {
-        default: 'arcade',
-        arcade: {
-            gravity: {y: 100},
-            debug: false
-        }
-    },
-    scene: {
-        preload: preload,
-        create: create,
-        update: update
-    }
-};
-
-document.getElementById('downloadHighScores').addEventListener('click', () => {
-    let file = '';
-    for(let i = 0; i < highScores.length; i++){
-        file += '\n' + highScores[i] + ',';
-    }
-    const blob = new Blob([file], { type: 'text/plain;charset=utf-8' });
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(blob);
-    link.download = `HighScores.txt`;
-    link.style.display = 'none';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(link.href);
-});
-
-
-document.getElementById('loadHighScores').addEventListener('change', function(event) {
-    const file = event.target.files[0];
-        
-    if (!file) {
-        return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = function(e) {
-        const contents = e.target.result;
-            
-        highScores = [];
-        const split = contents.split("\n");
-        for(let i = 1; i < split.length; i++){
-            highScores.push(Number(split[i].split(",")[0]));
-        }
-    };
-    reader.readAsText(file);
-});
-*/ 
+// var highScores = [];

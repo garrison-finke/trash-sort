@@ -35,11 +35,4 @@ const colors = {
     emeraldGreen10: 0xecf4e8,
 }
 
-function preloadFonts(scene) {
-    scene.load.font('avenir_regular', 'assets/fonts/Avenir_Next_LT_Pro_Regular.otf', 'opentype');
-    scene.load.font('avenir_demi', 'assets/fonts/Avenir_Next_LT_Pro_Demi.otf', 'opentype');
-    scene.load.font('bodoni_regular', 'assets/fonts/BodoniModa_9pt-Regular.ttf', 'truetype');
-    scene.load.font('bodoni_semibold', 'assets/fonts/BodoniModa_9pt-SemiBold.ttf', 'truetype');
-}
-
-export {colors, preloadFonts};
+export {colors};
