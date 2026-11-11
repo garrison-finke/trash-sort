@@ -113,7 +113,6 @@ class GameScene extends Phaser.Scene {
                 } else if (Phaser.Geom.Intersects.RectangleToRectangle(trashRect, trashBin.getBounds())) {
                     game.correctCheck(game.trash, 't');
                 }
-                game.trash.spawn(game.keys, 450, 10);
             }
         );
     }
@@ -131,6 +130,7 @@ class GameScene extends Phaser.Scene {
         } else {
             this.updateLives();
         }
+        game.trash.spawn(game.keys, 450, 10);
     }
     updateScore() {
         this.score += 100;
