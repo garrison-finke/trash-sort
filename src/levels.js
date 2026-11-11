@@ -85,3 +85,33 @@ const levelItems = {
 
 // This is how we filter out what items show up on what level. null is everything.
 
+// These settings control how each level appears.
+// The actual items for each level remain in levelItems above.
+const levelDetails = {
+    regular: {
+        label: 'GENERAL',
+        backgroundColor: '#dbbde8',
+        image: null // ie: image: 'assets/backgrounds/asc.jpg'
+    },
+
+    asc: {
+        label: 'ANDERSON STUDENT CENTER',
+        backgroundColor: '#d8e9cf',
+        image: null
+    },
+
+    oss: {
+        label: "O'SHAUGHNESSY SCIENCE HALL",
+        backgroundColor: '#cddfeb',
+        image: null
+    },
+
+    scc: {
+        label: 'SCHOENECKER CENTER',
+        backgroundColor: '#f0dfc7',
+        image: null
+    }
+};
+
+// Allow other files to import both objects.
+export {levelItems, levelDetails};

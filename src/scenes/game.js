@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import {preloadTrash, preloadBins} from '../preloading.js';
 import {colors} from '../colors.js'
 import {Trash} from '../trash.js';
+import {levelItems, levelDetails} from '../levels.js';
 
 class GameScene extends Phaser.Scene {
 
@@ -19,7 +20,31 @@ class GameScene extends Phaser.Scene {
     init() {
         this.score = 0;
         this.lives = 3;
+        this.roundEnded = false;
+
+        //Retrieve the level chosen in the level selection scene.
+        const savedLevel = this.registry.get('selectedLevel');     
+        
+        if (Object.prototype.hasOwnProperty.call(levelItems, savedLevel)) {
+            this.selectedLevel = savedLevel;
+        } else {
+            this.selectedLevel = 'regular';
+        }
+
+        // Store choice so Play Again can reuse it.
+        this.registry.set('selectedLevel', this.selectedLevel);
+        const details = levelDetails[this.selectedLevel];
+
+        // takes care of the background behind the play area
+        document.body.style.backgroundColor = details.backgroundColor;
+
+        if (details.image) {
+            const imageUrl = import.meta.env.BASE_URL + details.image;
+            document.body.style.backgroundImage = 'url("' + imageUrl + '")';
+    } else {
+        document.body.style.backgroundImage = 'none';
     }
+}
 
     preload() {
         this.keys = preloadTrash(this);
@@ -27,7 +52,22 @@ class GameScene extends Phaser.Scene {
     }
 
     create() {
+        
         let game = this;
+
+        const configuredItems = levelItems[game.selectedLevel];
+
+        game.availableKeys = game.keys.filter(function (key) {
+        let belongsToLevel = false;
+
+        if (configuredItems === null) {
+            belongsToLevel = true;
+        } else {
+            belongsToLevel = configuredItems.includes(key);
+        }
+
+        return belongsToLevel && game.textures.exists(key);
+    });
 
         let recyclingBin = new Phaser.GameObjects.Image(this, 100, 750, 'recycling-bin');
         let organicsBin = new Phaser.GameObjects.Image(this, 333, 750, 'organics-bin');
