@@ -102,18 +102,22 @@ class GameScene extends Phaser.Scene {
         this.trash.spawn(this.keys, 450, 10); 
         this.trash.on('dragend', 
             function (pointer) {
+                game.trash.setCrinkled(false);
                 game.trash.body.setAllowGravity(true);
                 let trashRect = game.trash.getBounds();
                 if (Phaser.Geom.Intersects.RectangleToRectangle(trashRect, recyclingBin.getBounds())) {
                     game.correctCheck(game.trash, 'r');
+                    game.trash.spawn(game.keys, 450, 10);
                 } else if (Phaser.Geom.Intersects.RectangleToRectangle(trashRect, organicsBin.getBounds())) {
                     game.correctCheck(game.trash, 'o');
+                    game.trash.spawn(game.keys, 450, 10);
                 } else if (Phaser.Geom.Intersects.RectangleToRectangle(trashRect, specialtyBin.getBounds())) {
                     game.correctCheck(game.trash, 's');
+                    game.trash.spawn(game.keys, 450, 10);
                 } else if (Phaser.Geom.Intersects.RectangleToRectangle(trashRect, trashBin.getBounds())) {
                     game.correctCheck(game.trash, 't');
+                    game.trash.spawn(game.keys, 450, 10);
                 }
-                game.trash.spawn(game.keys, 450, 10);
             }
         );
     }

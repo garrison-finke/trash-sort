@@ -8,6 +8,14 @@ class Trash extends Phaser.GameObjects.Image {
         scene.add.existing(this);
         scene.physics.add.existing(this);
 
+        // enables filter for displacement map
+        createCrinkleMap(scene);
+        this.enableFilters();
+
+        this.crinkleFilter = this.filters.internal.addDisplacement('crinkle-map', 0, 0);        
+        this.crinkleFilter.setPaddingOverride(null);
+        this.crinkleFilter.setActive(false);
+
         this.setInteractive();
         scene.input.setDraggable(this);
 
@@ -15,6 +23,8 @@ class Trash extends Phaser.GameObjects.Image {
             function (pointer) {
                 this.body.setAllowGravity(false);
                 this.body.setVelocity(0, 0);
+
+                this.setCrinkled(true); // keeps crinkle when held down
             }
         );
 
@@ -26,7 +36,23 @@ class Trash extends Phaser.GameObjects.Image {
         );
     }
 
+    setCrinkled(isCrinkled) {
+
+        if (isCrinkled) {
+
+            this.crinkleFilter.x = 0.04;
+            this.crinkleFilter.y = 0.04;
+            this.crinkleFilter.setActive(true);
+
+        } else {
+            this.crinkleFilter.x = 0.0;
+            this.crinkleFilter.y = 0.0;
+            this.crinkleFilter.setActive(false);
+        }
+    }
+
     spawn(keys, x, y) {
+        this.setCrinkled(false);
         let index = Math.floor(Math.random() * keys.length); // what if Math.random() gives 1.0
         this.setTexture(keys[index]);
         this.setX(x);
@@ -42,6 +68,10 @@ class Trash extends Phaser.GameObjects.Image {
 * 
 */
 function createCrinkleMap(scene) {
+
+    if (scene.textures.exists('crinkle-map')) {
+        return;
+    }   
     const size = 128;
 
     // loads into memory
@@ -73,11 +103,11 @@ function createCrinkleMap(scene) {
             pixels.data[index + 2] = 128;
             pixels.data[index + 3] = 255; // changes transparency, dont change
 
-            context.putImageData(0,0);
 
         }
     }
-
+    context.putImageData(pixels, 0, 0);
+    texture.refresh();
 }
 
 export {Trash};
