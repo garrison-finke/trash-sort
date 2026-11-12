@@ -41,6 +41,8 @@ class GameScene extends Phaser.Scene {
         if (details.image) {
             const imageUrl = import.meta.env.BASE_URL + details.image;
             document.body.style.backgroundImage = 'url("' + imageUrl + '")';
+            document.body.style.backgroundRepeat =  'no-repeat';
+            document.body.style.backgroundSize = 'cover';
     } else {
         document.body.style.backgroundImage = 'none';
     }
@@ -54,6 +56,8 @@ class GameScene extends Phaser.Scene {
     create() {
         
         let game = this;
+
+        document.cookie = "score=0";
 
         const configuredItems = levelItems[game.selectedLevel];
 
@@ -135,6 +139,7 @@ class GameScene extends Phaser.Scene {
     updateScore() {
         this.score += 100;
         this.scoreText.setText('Score: ' + this.score);
+        document.cookie = "score=" + this.score;
     }
     updateLives() {
         this.lives--;

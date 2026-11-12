@@ -97,19 +97,19 @@ const levelDetails = {
     asc: {
         label: 'ANDERSON STUDENT CENTER',
         backgroundColor: '#d8e9cf',
-        image: null
+        image: 'assets/asc.jpg'
     },
 
     oss: {
         label: "O'SHAUGHNESSY SCIENCE HALL",
         backgroundColor: '#cddfeb',
-        image: null
+        image: 'assets/oss.jpg'
     },
 
     scc: {
         label: 'SCHOENECKER CENTER',
         backgroundColor: '#f0dfc7',
-        image: null
+        image: 'assets/scc.jpg'
     }
 };
 
