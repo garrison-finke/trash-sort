@@ -151,6 +151,7 @@ class GameScene extends Phaser.Scene {
     updateScore() {
         this.score += 100;
         this.scoreText.setText('Score: ' + this.score);
+        document.cookie = "score=" + this.score;
     }
     updateLives() {
         this.lives--;
