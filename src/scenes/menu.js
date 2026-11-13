@@ -11,6 +11,8 @@ class MenuScene extends Phaser.Scene {
     
     create() {
         let menu = this;
+        document.body.style.backgroundColor = '#dbbde8'; // not needed when we add images for the level abckgrounds, currently using colors.
+        document.body.style.backgroundImage = 'none'; 
 
         menu.add.text(450, 300, 'Welcome to TRASH SORT', {
             fontFamily: 'avenir_regular',

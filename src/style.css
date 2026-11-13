@@ -6,4 +6,9 @@ body {
     align-items: center;
 
     min-height: 100vh;
+
+    background-color: #dbbde8;
+    background-repeat: repeat;
+    background-size: 600px auto;
+    background-position: center top;
 }

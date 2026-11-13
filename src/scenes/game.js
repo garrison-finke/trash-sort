@@ -30,6 +30,7 @@ class GameScene extends Phaser.Scene {
         } else {
             this.selectedLevel = 'regular';
         }
+        
 
         // Store choice so Play Again can reuse it.
         this.registry.set('selectedLevel', this.selectedLevel);
@@ -41,20 +42,31 @@ class GameScene extends Phaser.Scene {
         if (details.image) {
             const imageUrl = import.meta.env.BASE_URL + details.image;
             document.body.style.backgroundImage = 'url("' + imageUrl + '")';
-    } else {
-        document.body.style.backgroundImage = 'none';
+        } else {
+            document.body.style.backgroundImage = 'none';
     }
 }
 
     preload() {
         this.keys = preloadTrash(this);
         preloadBins(this);
+
+        // this looks so bad rn :sob: but keeping it for later. 
+        //this.load.image('paper-background', import.meta.env.BASE_URL + 'backgrounds/paper.jpg');
+
     }
 
     create() {
         
         let game = this;
 
+        /*
+        const paperBackground = game.add.image(0, 0, 'paper-background')
+        paperBackground.setOrigin(0, 0);
+        paperBackground.setDisplaySize(game.scale.width, game.scale.height);
+        paperBackground.setDepth(-100);
+        */
+       
         const configuredItems = levelItems[game.selectedLevel];
 
         game.availableKeys = game.keys.filter(function (key) {
