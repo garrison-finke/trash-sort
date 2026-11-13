@@ -1,28 +1,41 @@
 
 const levelItems = {
+    // (everything)
     regular: null,
 
-    // O'Shaughnessy Science Hall: classrooms, offices, and labs
-    oss: [
+    // Schoenecker Hall North: dorm rooms, dining, and laundry.
+    shn: [
+        // Food scraps and compostable dining items.
         'organics-apple-core',
+        'organics-cheeseburger',
+        'organics-chicken-bone',
         'organics-coffee-cup',
+        'organics-coffee-grounds',
         'organics-coffee-sleeve',
+        'organics-compost',
+        'organics-cutlery',
         'organics-napkin',
+        'organics-napkins',
+        'organics-plate',
         'organics-teabag',
 
+        // Drinks, delivery packaging, schoolwork, and laundry containers.
         'recycling-aluminum-can',
         'recycling-cardboard',
+        'recycling-carton',
         'recycling-glass-bottle',
         'recycling-paper',
         'recycling-plastic-containers',
 
+        // Items students might bring from their dorm rooms.
         'specialty-batteries',
-        'specialty-computer-part',
-        'specialty-lightbulb',
         'specialty-plastic-bag',
 
+        // Snacks, condiment packets, and disposable dining items.
         'trash-chip-bag',
         'trash-gum',
+        'trash-ketchup-packet',
+        'trash-paper',
         'trash-utensil'
     ],
 
@@ -91,25 +104,25 @@ const levelDetails = {
     regular: {
         label: 'GENERAL',
         backgroundColor: '#dbbde8',
-        image: null // ie: image: 'assets/backgrounds/asc.jpg'
+        image: 'backgrounds/arch.jpg'
     },
 
     asc: {
         label: 'ANDERSON STUDENT CENTER',
         backgroundColor: '#d8e9cf',
-        image: null
+        image: 'backgrounds/asc.jpg'
     },
 
-    oss: {
-        label: "O'SHAUGHNESSY SCIENCE HALL",
+    shn: {
+        label: "SHOENECKER HALL NORTH",
         backgroundColor: '#cddfeb',
-        image: null
+        image: 'backgrounds/shn.jpg'
     },
 
     scc: {
         label: 'SCHOENECKER CENTER',
         backgroundColor: '#f0dfc7',
-        image: null
+        image: 'backgrounds/scc.jpg'
     }
 };
 

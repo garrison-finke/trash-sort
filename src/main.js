@@ -5,11 +5,14 @@ import {GameOverScene} from './scenes/game_over.js';
 import {LevelSelectScene} from './scenes/level_select.js';
 import {GalleryScene} from './scenes/gallery.js';
 
+
+
+
 new Phaser.Game({
     type: Phaser.AUTO,
     width: 900,
     height: 900,
-    backgroundColor: 'rgb(200, 200, 200)',
+    backgroundColor: 'rgb(245, 240, 230)',
     scene: [
         new MenuScene('menu'), 
         new GameScene('game'), 

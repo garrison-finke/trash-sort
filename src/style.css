@@ -8,7 +8,15 @@ body {
     min-height: 100vh;
 
     background-color: #dbbde8;
-    background-repeat: repeat;
-    background-size: 600px auto;
+    background-repeat: no-repeat;
+    background-size: cover;
     background-position: center top;
+    background-attachment: fixed;
+}
+
+canvas {
+    border: 2px solid #222222;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+    display: block;
+    border-radius: 16px;
 }
