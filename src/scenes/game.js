@@ -30,6 +30,7 @@ class GameScene extends Phaser.Scene {
         } else {
             this.selectedLevel = 'regular';
         }
+        
 
         // Store choice so Play Again can reuse it.
         this.registry.set('selectedLevel', this.selectedLevel);
@@ -41,24 +42,31 @@ class GameScene extends Phaser.Scene {
         if (details.image) {
             const imageUrl = import.meta.env.BASE_URL + details.image;
             document.body.style.backgroundImage = 'url("' + imageUrl + '")';
-            document.body.style.backgroundRepeat =  'no-repeat';
-            document.body.style.backgroundSize = 'cover';
-    } else {
-        document.body.style.backgroundImage = 'none';
+        } else {
+            document.body.style.backgroundImage = 'none';
     }
 }
 
     preload() {
         this.keys = preloadTrash(this);
         preloadBins(this);
+
+        // this looks so bad rn :sob: but keeping it for later. 
+        //this.load.image('paper-background', import.meta.env.BASE_URL + 'backgrounds/paper.jpg');
+
     }
 
     create() {
         
         let game = this;
 
-        document.cookie = "score=0";
-
+        /*
+        const paperBackground = game.add.image(0, 0, 'paper-background')
+        paperBackground.setOrigin(0, 0);
+        paperBackground.setDisplaySize(game.scale.width, game.scale.height);
+        paperBackground.setDepth(-100);
+        */
+       
         const configuredItems = levelItems[game.selectedLevel];
 
         game.availableKeys = game.keys.filter(function (key) {
@@ -106,18 +114,22 @@ class GameScene extends Phaser.Scene {
         this.trash.spawn(this.keys, 450, 10); 
         this.trash.on('dragend', 
             function (pointer) {
+                game.trash.setCrinkled(false);
                 game.trash.body.setAllowGravity(true);
                 let trashRect = game.trash.getBounds();
                 if (Phaser.Geom.Intersects.RectangleToRectangle(trashRect, recyclingBin.getBounds())) {
                     game.correctCheck(game.trash, 'r');
+                    game.trash.spawn(game.keys, 450, 10);
                 } else if (Phaser.Geom.Intersects.RectangleToRectangle(trashRect, organicsBin.getBounds())) {
                     game.correctCheck(game.trash, 'o');
+                    game.trash.spawn(game.keys, 450, 10);
                 } else if (Phaser.Geom.Intersects.RectangleToRectangle(trashRect, specialtyBin.getBounds())) {
                     game.correctCheck(game.trash, 's');
+                    game.trash.spawn(game.keys, 450, 10);
                 } else if (Phaser.Geom.Intersects.RectangleToRectangle(trashRect, trashBin.getBounds())) {
                     game.correctCheck(game.trash, 't');
+                    game.trash.spawn(game.keys, 450, 10);
                 }
-                game.trash.spawn(game.keys, 450, 10);
             }
         );
     }
