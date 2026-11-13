@@ -26,4 +26,16 @@ function preloadBins(scene) {
     });
 }
 
-export {preloadFonts, preloadTrash, preloadBins};
+function preloadSound(scene) {
+    let keys = [];
+    let sounds = import.meta.glob('../public/assets/sound/*.mp3');
+    Object.entries(sounds).forEach(([path]) => {
+        let local = path.split('/').slice(2).join('/');
+        let key = path.split('/').pop().replace('.mp3', '');
+        scene.load.audio(key, local);
+        keys.push(key);
+    });
+    return keys;
+}
+
+export {preloadFonts, preloadTrash, preloadBins, preloadSound};
