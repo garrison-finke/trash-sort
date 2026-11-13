@@ -1,5 +1,5 @@
 import Phaser from 'phaser';
-import {preloadTrash, preloadBins} from '../preloading.js';
+import {preloadTrash, preloadBins, preloadSound} from '../preloading.js';
 import {colors} from '../colors.js'
 import {Trash} from '../trash.js';
 import {levelItems, levelDetails} from '../levels.js';
@@ -9,6 +9,7 @@ class GameScene extends Phaser.Scene {
     constructor(key) {
         super(key);
         this.keys = [];
+        this.soundKeys = [];
         this.scoreText;
         this.livesText;
         this.recyclingBin;
@@ -54,10 +55,10 @@ class GameScene extends Phaser.Scene {
         // this looks so bad rn :sob: but keeping it for later. 
         //this.load.image('paper-background', import.meta.env.BASE_URL + 'backgrounds/paper.jpg');
 
+        this.soundKeys = preloadSound(this);
     }
 
     create() {
-        
         let game = this;
 
         /*
@@ -144,9 +145,12 @@ class GameScene extends Phaser.Scene {
     correctCheck(gameObject, c) {
         if(gameObject.texture.key[0] == c) {
             this.updateScore();
+            this.sound.play(this.soundKeys[0]);
         } else {
             this.updateLives();
+            this.sound.play(this.soundKeys[1]);
         }
+        this.trash.spawn(this.keys, 450, 10);
     }
     updateScore() {
         this.score += 100;
