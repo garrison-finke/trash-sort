@@ -28,7 +28,10 @@ class Button extends Phaser.GameObjects.Container {
             color: Phaser.Display.Color.IntegerToColor(fontColor).rgba,
         }).setOrigin(0.5);
 
-        let box = scene.add.rectangle(0, 0, text.width + horizontalPadding, text.height + verticalPadding, fillColor, 1).setStrokeStyle(borderThickness, borderColor);
+        let box = scene.add.rectangle(0, 0, text.width + horizontalPadding, 
+            text.height + verticalPadding,
+             fillColor, 
+             1).setStrokeStyle(borderThickness, borderColor);
 
         this.setX(x);
         this.setY(y);
